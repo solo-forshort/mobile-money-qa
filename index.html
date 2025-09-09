@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Cybersecurity Q&A</title>
+<title>Mobile Money Security Q&A</title>
 <style>
     body {
         font-family: Arial, sans-serif;
@@ -104,6 +104,15 @@
         font-style: italic;
         margin-top: 50px;
     }
+    .debug {
+        background: #f8f9fa;
+        border: 1px solid #dee2e6;
+        border-radius: 6px;
+        padding: 10px;
+        margin: 10px 0;
+        font-family: monospace;
+        font-size: 0.8em;
+    }
 </style>
 </head>
 <body>
@@ -123,6 +132,8 @@
     </a>
 </div>
 
+<div id="debug" class="debug" style="display:none;"></div>
+
 <div class="grid" id="cardContainer">
     <div class="loading">Loading questions from Google Sheets...</div>
 </div>
@@ -130,8 +141,18 @@
 <script>
     const sheetURL = "https://opensheet.elk.sh/12bqzmih2nvVQnSYAMggXG3FBrbZyXhC5IaAEhqydkb0/1";
     let allData = [];
+    
+    // Debug function
+    function debug(message, data = null) {
+        const debugDiv = document.getElementById("debug");
+        debugDiv.style.display = "block";
+        debugDiv.innerHTML += `<div>${message}</div>`;
+        if (data) {
+            debugDiv.innerHTML += `<pre>${JSON.stringify(data, null, 2)}</pre>`;
+        }
+    }
 
-    // Sample data for preview in case the API doesn't load
+    // Sample data for preview
     const sampleData = [
         {
             Question: "How can I know a transaction is fake?",
@@ -140,68 +161,71 @@
             Notes: "Key Point: Vendors should never share their mobile money PIN"
         },
         {
-            Question: "Can a person withdraw money from your wallet without any action from the MoMo user?",
-            Priority: "Medium",
-            Tag: "PIN Safety & Authentication",
-            Notes: "Extra Detail: Even trusted staff or relatives should not have access"
-        },
-        {
             Question: "What should I do if I lose my SIM card?",
             Priority: "High",
             Tag: "SIM Security",
             Notes: "Immediately contact your network provider to block the SIM"
-        },
-        {
-            Question: "How can I secure my mobile money PIN?",
-            Priority: "High",
-            Tag: "PIN Safety",
-            Notes: "Never share your PIN with anyone, including family members"
-        },
-        {
-            Question: "What are common mobile money scams?",
-            Priority: "Medium",
-            Tag: "Fraud & Scam Alerts",
-            Notes: "Be aware of fake promotion messages and unauthorized transactions"
-        },
-        {
-            Question: "How do I verify a mobile money agent?",
-            Priority: "Medium",
-            Tag: "Agent Verification",
-            Notes: "Check for official signage and ask for proper identification"
         }
     ];
 
-    // Try to fetch from the actual API, fallback to sample data
+    // Fetch data from Google Sheets
+    debug("Fetching data from: " + sheetURL);
+    
     fetch(sheetURL)
-        .then(res => res.json())
+        .then(res => {
+            debug("API Response Status: " + res.status);
+            return res.json();
+        })
         .then(data => {
-            // Map your Google Sheets columns to the expected format
-            allData = data.filter(row => {
-                const question = row["Question 1\nWhat common mobile money security question or concern do you have? \n      Example: \"What do I do if I lose my SIM card?\" or\n                        \"How can I know a transaction is fake?\""];
-                return question && question.trim() !== "";
-            }).map(row => ({
-                Question: row["Question 1\nWhat common mobile money security question or concern do you have? \n      Example: \"What do I do if I lose my SIM card?\" or\n                        \"How can I know a transaction is fake?\""] || "",
-                Priority: row["Priority (H/M/L) "] === "H" ? "High" : row["Priority (H/M/L) "] === "M" ? "Medium" : row["Priority (H/M/L) "] === "L" ? "Low" : row["Priority (H/M/L) "] || "Medium",
-                Tag: row["Tag (e.g., SIM swap, phishing, PIN safety)."] || row["Question 2\nWhich category does your question fit best?  "] || "Mobile Money",
-                Notes: row["Notes → any extra remarks"] || row["Question 3\nPlease describe a real situation or example of your concern (if you have one).  "] || "No additional notes"
-            }));
+            debug("Raw data received:", data);
+            
+            // Process the data
+            allData = data.map((row, index) => {
+                debug(`Processing row ${index}:`, row);
+                
+                const question = row["Question 1\nWhat common mobile money security question or concern do you have? \n      Example: \"What do I do if I lose my SIM card?\" or\n                        \"How can I know a transaction is fake?\""] || "";
+                const priority = row["Priority (H/M/L) "] || "";
+                const tag = row["Tag (e.g., SIM swap, phishing, PIN safety)."] || row["Question 2\nWhich category does your question fit best?  "] || "";
+                const notes = row["Notes → any extra remarks"] || row["Question 3\nPlease describe a real situation or example of your concern (if you have one).  "] || "";
+                const timestamp = row["Timestamp"] || "";
+                
+                return {
+                    Question: question.trim(),
+                    Priority: priority === "H" ? "High" : priority === "M" ? "Medium" : priority === "L" ? "Low" : priority || "Medium",
+                    Tag: tag.trim() || "Mobile Money",
+                    Notes: notes.trim() || "No additional notes",
+                    Timestamp: timestamp,
+                    OriginalRow: index
+                };
+            }).filter(row => {
+                const hasQuestion = row.Question && row.Question.length > 0;
+                debug(`Row ${row.OriginalRow} - Has question: ${hasQuestion} - Question: "${row.Question}"`);
+                return hasQuestion;
+            });
+            
+            debug("Filtered data:", allData);
             
             if (allData.length === 0) {
+                debug("No valid data found, using sample data");
                 allData = sampleData;
             }
+            
             renderCards(allData);
         })
         .catch(error => {
-            console.log("Using sample data due to API error:", error);
+            debug("Error fetching data:", error);
             allData = sampleData;
             renderCards(allData);
         });
 
     function renderCards(data) {
+        debug(`Rendering ${data.length} cards`);
         const container = document.getElementById("cardContainer");
         container.innerHTML = "";
 
-        data.forEach(row => {
+        data.forEach((row, index) => {
+            debug(`Creating card ${index} for: "${row.Question}"`);
+            
             const card = document.createElement("div");
             card.className = "card";
 
