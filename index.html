@@ -1,300 +1,139 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Mobile Money Security Q&A</title>
-<style>
-  :root{
-    --bg:#f5f7fa; --card:#fff; --text:#111827; --muted:#6b7280; --border:#e5e7eb; --accent:#2563eb;
-  }
-  *{box-sizing:border-box}
-  body{margin:0;padding:22px;background:var(--bg);font-family:Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;color:var(--text)}
-  header{max-width:1100px;margin:0 auto 10px;text-align:center}
-  h1{margin:0;font-size:26px}
-  p.sub{margin:6px 0 0;color:var(--muted)}
-  .controls{max-width:1100px;margin:16px auto 18px;display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
-  .controls input,.controls select{padding:10px 12px;border:1px solid var(--border);border-radius:10px;background:#fff;font-size:14px;min-width:220px}
-  .controls .cta{padding:10px 12px;border-radius:10px;border:none;background:var(--accent);color:#fff;cursor:pointer}
-  .controls .cta:hover{filter:brightness(.95)}
-  #cards{max-width:1100px;margin:0 auto;display:grid;gap:14px;grid-template-columns:1fr}
-  @media(min-width:720px){#cards{grid-template-columns:1fr 1fr}}
-  @media(min-width:1100px){#cards{grid-template-columns:1fr 1fr 1fr}}
-  .card{background:var(--card);border-radius:12px;padding:14px;border:1px solid var(--border);box-shadow:0 4px 14px rgba(10,10,10,0.04);transition:transform .18s,box-shadow .18s;display:flex;flex-direction:column;gap:8px;min-height:130px}
-  .card:hover{transform:translateY(-4px);box-shadow:0 12px 28px rgba(10,10,10,0.08)}
-  .badges{display:flex;gap:8px;flex-wrap:wrap}
-  .badge{font-size:12px;padding:5px 10px;border-radius:999px;border:1px solid var(--border);background:#fff;color:var(--muted)}
-  .priority.High{background:#ef4444;color:#fff;border-color:#ef4444}
-  .priority.Medium{background:#f59e0b;color:#111;border-color:#f59e0b}
-  .priority.Low{background:#16a34a;color:#fff;border-color:#16a34a}
-  .tag-badge{background:#eef4ff;color:#1e3a8a;border-color:#dbe6ff;font-weight:600}
-  .q{font-weight:700;font-size:15px;margin:0;color:var(--text)}
-  .row{font-size:14px;color:#374151}
-  .notes{font-size:13px;color:#374151;background:#fbfcfd;border:1px dashed var(--border);padding:8px;border-radius:8px}
-  .smalllink{color:var(--accent);text-decoration:none}
-  .empty{max-width:1100px;margin:40px auto;text-align:center;color:var(--muted)}
-  footer{max-width:1100px;margin:18px auto 0;text-align:center;color:var(--muted);font-size:13px}
-  .loading{max-width:1100px;margin:30px auto;text-align:center;color:var(--muted)}
-</style>
+  <meta charset="UTF-8">
+  <title>Cybersecurity Awareness Questions</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f4f9;
+      padding: 20px;
+    }
+    h2 {
+      text-align: center;
+      color: #333;
+    }
+    .card {
+      background: white;
+      border-radius: 10px;
+      padding: 15px;
+      margin: 15px auto;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+      max-width: 600px;
+    }
+    .question {
+      font-size: 18px;
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+    .solution {
+      margin-bottom: 8px;
+    }
+    .badge {
+      display: inline-block;
+      padding: 5px 10px;
+      border-radius: 20px;
+      font-size: 12px;
+      margin-right: 5px;
+      color: white;
+    }
+    .high { background: #e74c3c; }   /* Red */
+    .medium { background: #f39c12; } /* Orange */
+    .low { background: #27ae60; }    /* Green */
+    .tag { background: #3498db; }    /* Blue */
+    #search-container {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    #page-search {
+      padding: 10px 14px;
+      width: 80%;
+      max-width: 500px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      font-size: 14px;
+    }
+    .suggest-btn {
+      font-size: 16px;
+      padding: 12px 20px;
+      background-color: #3498db;
+      color: white;
+      border-radius: 8px;
+      text-decoration: none;
+      text-align: center;
+      display: inline-block;
+      margin-bottom: 20px;
+    }
+    .suggest-btn:hover {
+      background-color: #2980b9;
+    }
+  </style>
 </head>
 <body>
+  <h2>Cybersecurity Awareness Questions</h2>
 
-<header>
-  <h1>Mobile Money Security Q&A</h1>
-  <p class="sub">Live vendor questions & solutions — synced from your Google Sheet (published CSV).</p>
-</header>
+  <!-- Ask A Question Button -->
+  <div id="search-container">
+    <a href="https://docs.google.com/forms/d/e/1FAIpQLScTZWQleOrA9JvGm6GZ_8CzrfzHQzgb7zwjnXejKTAtn5qnhw/viewform?usp=sharing&ouid=117936331264839609159" target="_blank" class="suggest-btn">
+      📝 Ask A Question
+    </a>
+    <input type="text" id="page-search" placeholder="Search questions...">
+  </div>
 
-<div class="controls">
-  <input id="search" type="search" placeholder="Search (fake transaction, PIN, SIM swap, etc.)" />
-  <select id="priorityFilter">
-    <option value="">All priorities</option>
-    <option value="High">High</option>
-    <option value="Medium">Medium</option>
-    <option value="Low">Low</option>
-  </select>
-  <button id="askBtn" class="cta">Ask a Question</button>
-</div>
+  <div id="cards"></div>
 
-<div id="cards"></div>
-<div id="empty" class="empty" style="display:none">No items match your search/filters.</div>
-<div id="loading" class="loading">Loading data…</div>
+  <script>
+    const apiKey = "AIzaSyDQPmzCD5z68jpaBprX9D_LWjKEFzAIwjc";
+    const sheetId = "1Qdoq2PNheBxEpjotm5YDWEm-kcjR_hskFyg5UZPpqxw";
+    const sheetName = "response";
+    const url = `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${sheetName}?key=${apiKey}`;
 
-<footer>Tip: submit a new question with the "Ask a Question" button. Refresh to see new responses.</footer>
+    fetch(url)
+      .then(response => response.json())
+      .then(data => {
+        const rows = data.values;
+        const container = document.getElementById("cards");
 
-<script>
-/* ============================
-   CONFIG - replace if needed
-   ============================ */
-const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vToqPBwRgOnC8tq-xQ18vrCTtAL5v0TG2z7HoXdGiXTtLoilWkpfoq3DFWr93oPSXlsW2f_kmJ2Vse4/pub?output=csv";
-const FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLSc4S6LV8NWwomzoGudHhDoAdwbQUblw3jOjVmvk4l6275Voeg/viewform?usp=sharing";
+        if (rows && rows.length > 1) {
+          rows.slice(1).forEach(row => {
+            const [timestamp, question, solution, priority, tag] = row;
 
-/* ============================
-   Utility: CSV parser (simple, handles quoted fields)
-   Returns array of objects: [ {header1: value, header2: value, ...}, ... ]
-   ============================ */
-function parseCSV(text){
-  // Normalize line endings
-  text = text.replace(/\r\n/g,"\n").replace(/\r/g,"\n");
-  const lines = text.split("\n").filter(l => l.trim() !== "");
-  if(lines.length === 0) return [];
+            const card = document.createElement("div");
+            card.className = "card";
 
-  // Split header by commas outside quotes
-  const split = (line) => line.match(/(".*?"|[^",\s]+)(?=\s*,|\s*$)/g) || [];
+            card.innerHTML = `
+              <div class="question">${question || "No Question"}</div>
+              <div class="solution"><strong>Solution:</strong> ${solution || "No solution yet"}</div>
+              <div>
+                ${priority ? `<span class="badge ${priority.toLowerCase()}">${priority}</span>` : ""}
+                ${tag ? `<span class="badge tag">${tag}</span>` : ""}
+              </div>
+            `;
 
-  const rawHeaders = split(lines[0]).map(h => {
-    // strip enclosing quotes and whitespace
-    return h.replace(/^"(.*)"$/,"$1").trim();
-  });
-
-  const data = [];
-  for(let i=1;i<lines.length;i++){
-    const cols = split(lines[i]).map(c => c.replace(/^"(.*)"$/,"$1"));
-    // If row has fewer cols than headers, pad with ""
-    while(cols.length < rawHeaders.length) cols.push("");
-    const obj = {};
-    rawHeaders.forEach((h,idx) => obj[h] = (cols[idx] !== undefined ? cols[idx] : "").trim());
-    data.push(obj);
-  }
-  return data;
-}
-
-/* ============================
-   Key detection: map headers to fields we want
-   Works by checking for snippets inside header names (case-insensitive)
-   ============================ */
-function detectHeaderKeys(headers){
-  const h = headers.map(x => String(x).toLowerCase());
-  const find = (snips) => {
-    return headers[h.findIndex(k => snips.every(s => k.includes(s)))];
-  };
-  // possible snippet sets to find each field
-  return {
-    question:  find(["question 1","common mobile money"]) || find(["question 1","what common"]) || find(["question"]),
-    category:  find(["question 2","category"]) || find(["category"]),
-    scenario:  find(["question 3","real situation"]) || find(["question 3","example"]) || find(["example scenario"]) || find(["scenario"]),
-    priority:  find(["priority"]) || find(["priority (h/m/l)"]) || find(["priority (h/m/l) "]),
-    tag:       find(["tag (e.g."]) || find(["tag"]) || find(["category"]),
-    notes:     find(["notes"]) || find(["any extra remarks"]) || find(["remarks"]),
-    solution:  find(["possible solution"]) || find(["possible solution "]) || find(["solution"]),
-    video:     find(["video link"]) || find(["video"])
-  };
-}
-
-/* ============================
-   Render helpers
-   ============================ */
-function escapeHtml(s){ return String(s ?? "").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
-function makeBadge(text, cls){ if(!text) return ""; return `<span class="badge ${cls?cls:''}">${escapeHtml(text)}</span>`; }
-
-/* ============================
-   App state
-   ============================ */
-let allItems = []; // mapped objects with keys: question, priority, tag, scenario, notes, solution, video
-let filtered = [];
-let detectedKeys = null;
-
-/* ============================
-   UI refs
-   ============================ */
-const cardsEl = document.getElementById("cards");
-const emptyEl = document.getElementById("empty");
-const loadingEl = document.getElementById("loading");
-const searchInput = document.getElementById("search");
-const priorityFilter = document.getElementById("priorityFilter");
-document.getElementById("askBtn").addEventListener("click", ()=> window.open(FORM_URL,"_blank","noopener"));
-
-/* ============================
-   Fetch CSV, parse, map and render
-   ============================ */
-async function loadAndRender(){
-  loadingEl.style.display = "block";
-  try{
-    const res = await fetch(CSV_URL);
-    if(!res.ok) throw new Error("Failed to fetch CSV: " + res.status);
-    const text = await res.text();
-    const rows = parseCSV(text);
-    if(!rows.length){
-      // no data
-      allItems = [];
-      filtered = [];
-      render();
-      return;
-    }
-
-    // detect the actual header names from parsed rows (use first row keys)
-    detectedKeys = detectHeaderKeys(Object.keys(rows[0]).map(x=>String(x).toLowerCase()) );
-    // Note: detectHeaderKeys returns the ORIGINAL header name matched (from headers array). 
-    // But our parseCSV used original headers, so we need mapping by checking lower-cased header string equality.
-    // Let's create a normalized map: map field -> actual header (exact string from rows[0] keys)
-    const rawHeaders = Object.keys(rows[0]);
-    const normalize = (s) => String(s || "").toLowerCase();
-    const headerMap = {};
-    // Build headerMap by matching the detectedKeys values to actual rawHeaders by substring match
-    function findHeaderFor(snippetCandidate){
-      if(!snippetCandidate) return null;
-      const lower = snippetCandidate.toLowerCase();
-      // find raw header containing all words in lower (split by spaces)
-      const parts = lower.split(/\s+/).filter(Boolean);
-      const found = rawHeaders.find(rh => {
-        const rl = rh.toLowerCase();
-        return parts.every(p => rl.includes(p));
+            container.appendChild(card);
+          });
+        } else {
+          container.innerHTML = "<p>No responses yet.</p>";
+        }
+      })
+      .catch(error => {
+        document.getElementById("cards").textContent = "Error: " + error;
       });
-      return found || null;
-    }
-    headerMap.question = findHeaderFor("question 1") || findHeaderFor("question") || rawHeaders[0];
-    headerMap.category = findHeaderFor("question 2") || findHeaderFor("category");
-    headerMap.scenario = findHeaderFor("question 3") || findHeaderFor("scenario") || findHeaderFor("example scenario");
-    headerMap.priority = findHeaderFor("priority") || findHeaderFor("priority (h/m/l)") || findHeaderFor("priority (h/m/l) ");
-    headerMap.tag = findHeaderFor("tag");
-    headerMap.notes = findHeaderFor("notes") || findHeaderFor("remarks");
-    headerMap.solution = findHeaderFor("possible solution") || findHeaderFor("solution");
-    headerMap.video = findHeaderFor("video link") || findHeaderFor("video");
 
-    // Map rows -> canonical items
-    allItems = rows.map(r => {
-      const get = k => {
-        if(!k) return "";
-        // find the key in r keys that matches ignoring case
-        const key = Object.keys(r).find(k2 => k2.toLowerCase() === String(k).toLowerCase()) || k;
-        return r[key] ?? "";
-      };
-      // Normalise priority values to High/Medium/Low if they used H/M/L or full words
-      let rawPriority = (get(headerMap.priority) || "").trim();
-      let priority = "";
-      if(!rawPriority) priority = "";
-      else if(/^h$/i.test(rawPriority)) priority = "High";
-      else if(/^m$/i.test(rawPriority)) priority = "Medium";
-      else if(/^l$/i.test(rawPriority)) priority = "Low";
-      else if(/high/i.test(rawPriority)) priority = "High";
-      else if(/medium/i.test(rawPriority)) priority = "Medium";
-      else if(/low/i.test(rawPriority)) priority = "Low";
-      else priority = rawPriority; // fallback raw string
+    // Search functionality
+    document.getElementById('page-search').addEventListener('input', function() {
+      const query = this.value.toLowerCase();
+      const cards = document.querySelectorAll('.card');
 
-      return {
-        question: (get(headerMap.question) || "").trim(),
-        category: (get(headerMap.category) || "").trim(),
-        scenario: (get(headerMap.scenario) || "").trim(),
-        priority: priority,
-        tag: (get(headerMap.tag) || "").trim(),
-        notes: (get(headerMap.notes) || "").trim(),
-        solution: (get(headerMap.solution) || "").trim(),
-        video: (get(headerMap.video) || "").trim()
-      };
-    })
-    // keep only rows that actually have a question
-    allItems = allItems.filter(it => it.question && it.question.length > 0);
-    // sort by priority (High, Medium, Low) then leave as-is
-    const order = {High:1, Medium:2, Low:3};
-    allItems.sort((a,b)=> (order[a.priority]||99) - (order[b.priority]||99));
-
-    // initial filtered set
-    filtered = allItems.slice();
-    render();
-  }catch(err){
-    console.error("Load error:", err);
-    // show message and try to use empty set
-    filtered = [];
-    allItems = [];
-    render();
-    const loading = document.getElementById("loading");
-    loading.textContent = "Could not load sheet data. Check CSV link or publish settings.";
-  } finally{
-    loadingEl.style.display = "none";
-  }
-}
-
-/* ============================
-   Render function
-   ============================ */
-function render(){
-  cardsEl.innerHTML = "";
-  if(!filtered.length){
-    emptyEl.style.display = "block";
-    return;
-  } else {
-    emptyEl.style.display = "none";
-  }
-
-  filtered.forEach(it => {
-    const card = document.createElement("article");
-    card.className = "card";
-    card.innerHTML = `
-      <div class="badges">
-        ${it.priority ? `<span class="badge priority ${escapeHtml(it.priority)}">${escapeHtml(it.priority)}</span>` : ""}
-        ${it.tag ? `<span class="badge tag-badge">${escapeHtml(it.tag)}</span>` : it.category ? `<span class="badge tag-badge">${escapeHtml(it.category)}</span>` : ""}
-      </div>
-      <div class="q">${escapeHtml(it.question)}</div>
-      ${it.scenario ? `<div class="row"><strong>Scenario:</strong> ${escapeHtml(it.scenario)}</div>` : ""}
-      ${it.notes ? `<div class="notes"><strong>Notes:</strong> ${escapeHtml(it.notes)}</div>` : ""}
-      ${it.solution ? `<div class="notes"><strong>Possible Solution:</strong> ${escapeHtml(it.solution)}</div>` : ""}
-      ${it.video ? `<div class="row"><strong>Video:</strong> <a class="smalllink" href="${escapeHtml(it.video)}" target="_blank" rel="noopener">${escapeHtml(it.video)}</a></div>` : ""}
-    `;
-    cardsEl.appendChild(card);
-  });
-}
-
-/* ============================
-   Filters
-   ============================ */
-searchInput.addEventListener("input", applyFilters);
-priorityFilter.addEventListener("change", applyFilters);
-
-function applyFilters(){
-  const q = searchInput.value.trim().toLowerCase();
-  const p = priorityFilter.value;
-  filtered = allItems.filter(it=>{
-    const hay = [it.question, it.scenario, it.notes, it.solution, it.tag, it.category].join(" ").toLowerCase();
-    const matchText = !q || hay.includes(q);
-    const matchPrio = !p || (it.priority === p);
-    return matchText && matchPrio;
-  });
-  render();
-}
-
-/* ============================
-   Init
-   ============================ */
-loadAndRender();
-</script>
+      cards.forEach(card => {
+        const text = card.innerText.toLowerCase();
+        if (text.includes(query)) {
+          card.style.display = '';
+        } else {
+          card.style.display = 'none';
+        }
+      });
+    });
+  </script>
 </body>
 </html>
