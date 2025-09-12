@@ -8,78 +8,145 @@
       font-family: Arial, sans-serif;
       background: #f4f4f9;
       padding: 20px;
+      color: #333;
+      transition: background 0.3s ease, color 0.3s ease;
     }
     h2 {
       text-align: center;
-      color: #333;
+      color: inherit;
+    }
+    /* Top Controls */
+    .top-controls {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .suggest-btn {
+      background: #3498db;
+      color: white;
+      padding: 10px 18px;
+      border-radius: 8px;
+      text-decoration: none;
+      font-size: 14px;
+      margin-right: 10px;
+      transition: background 0.3s ease;
+    }
+    .suggest-btn:hover {
+      background: #2980b9;
+    }
+    #page-search {
+      padding: 8px 12px;
+      width: 50%;
+      max-width: 300px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      font-size: 14px;
+    }
+    #priority-filter {
+      padding: 8px 12px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      font-size: 14px;
+      margin-left: 10px;
+    }
+    .toggle-btn {
+      margin-left: 10px;
+      padding: 8px 14px;
+      border-radius: 6px;
+      border: none;
+      cursor: pointer;
+      background: #2c3e50;
+      color: white;
+      font-size: 13px;
+      transition: background 0.3s ease;
+    }
+    .toggle-btn:hover {
+      background: #1a242f;
+    }
+    /* Cards Grid */
+    #cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 15px;
     }
     .card {
       background: white;
       border-radius: 10px;
-      padding: 15px;
-      margin: 15px auto;
+      padding: 12px;
       box-shadow: 0 2px 6px rgba(0,0,0,0.15);
-      max-width: 600px;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.3s ease, color 0.3s ease;
+    }
+    .card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
     }
     .question {
-      font-size: 18px;
+      font-size: 15px;
       font-weight: bold;
-      margin-bottom: 10px;
+      margin-bottom: 6px;
     }
     .solution {
-      margin-bottom: 8px;
+      font-size: 13px;
+      margin-bottom: 6px;
     }
     .badge {
       display: inline-block;
-      padding: 5px 10px;
+      padding: 4px 8px;
       border-radius: 20px;
-      font-size: 12px;
-      margin-right: 5px;
+      font-size: 11px;
+      margin-right: 4px;
       color: white;
     }
-    .high { background: #e74c3c; }   /* Red */
-    .medium { background: #f39c12; } /* Orange */
-    .low { background: #27ae60; }    /* Green */
-    .tag { background: #3498db; }    /* Blue */
-    #search-container {
-      text-align: center;
-      margin-bottom: 20px;
+    .high { background: #e74c3c; }
+    .medium { background: #f39c12; }
+    .low { background: #27ae60; }
+    .tag { background: #3498db; }
+
+    /* Dark Mode */
+    body.dark {
+      background: #1e1e1e;
+      color: #f4f4f9;
     }
-    #page-search {
-      padding: 10px 14px;
-      width: 80%;
-      max-width: 500px;
-      border-radius: 8px;
-      border: 1px solid #ccc;
-      font-size: 14px;
+    body.dark .card {
+      background: #2c2c2c;
+      color: #f4f4f9;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.6);
     }
-    .suggest-btn {
-      font-size: 16px;
-      padding: 12px 20px;
-      background-color: #3498db;
-      color: white;
-      border-radius: 8px;
-      text-decoration: none;
-      text-align: center;
-      display: inline-block;
-      margin-bottom: 20px;
+    body.dark #page-search,
+    body.dark #priority-filter {
+      background: #333;
+      color: #f4f4f9;
+      border: 1px solid #555;
     }
-    .suggest-btn:hover {
-      background-color: #2980b9;
+    body.dark .suggest-btn {
+      background: #2980b9;
+    }
+    body.dark .toggle-btn {
+      background: #444;
     }
   </style>
 </head>
 <body>
   <h2>Cybersecurity Awareness Questions</h2>
 
-  <!-- Ask A Question Button -->
-  <div id="search-container">
-    <a href="https://docs.google.com/forms/d/e/1FAIpQLScTZWQleOrA9JvGm6GZ_8CzrfzHQzgb7zwjnXejKTAtn5qnhw/viewform?usp=sharing&ouid=117936331264839609159" target="_blank" class="suggest-btn">
-      📝 Ask A Question
-    </a>
+  <!-- Top controls -->
+  <div class="top-controls">
+    <a href="https://docs.google.com/forms/d/e/1FAIpQLScTZWQleOrA9JvGm6GZ_8CzrfzHQzgb7zwjnXejKTAtn5qnhw/viewform?usp=sharing&ouid=117936331264839609159" 
+       target="_blank" 
+       class="suggest-btn"> Ask A Question</a>
     <input type="text" id="page-search" placeholder="Search questions...">
+    <select id="priority-filter">
+      <option value="all">All</option>
+      <option value="high">High</option>
+      <option value="medium">Medium</option>
+      <option value="low">Low</option>
+    </select>
+    <button id="toggle-mode" class="toggle-btn">🌙 Dark Mode</button>
   </div>
 
+  <!-- Cards container -->
   <div id="cards"></div>
 
   <script>
@@ -100,6 +167,7 @@
 
             const card = document.createElement("div");
             card.className = "card";
+            card.setAttribute("data-priority", (priority || "").toLowerCase());
 
             card.innerHTML = `
               <div class="question">${question || "No Question"}</div>
@@ -120,19 +188,30 @@
         document.getElementById("cards").textContent = "Error: " + error;
       });
 
-    // Search functionality
-    document.getElementById('page-search').addEventListener('input', function() {
-      const query = this.value.toLowerCase();
+    // Search filter
+    document.getElementById('page-search').addEventListener('input', filterCards);
+    document.getElementById('priority-filter').addEventListener('change', filterCards);
+
+    function filterCards() {
+      const query = document.getElementById('page-search').value.toLowerCase();
+      const priorityFilter = document.getElementById('priority-filter').value;
       const cards = document.querySelectorAll('.card');
 
       cards.forEach(card => {
         const text = card.innerText.toLowerCase();
-        if (text.includes(query)) {
-          card.style.display = '';
-        } else {
-          card.style.display = 'none';
-        }
+        const cardPriority = card.getAttribute('data-priority');
+        const matchesText = text.includes(query);
+        const matchesPriority = (priorityFilter === "all" || cardPriority === priorityFilter);
+
+        card.style.display = (matchesText && matchesPriority) ? '' : 'none';
       });
+    }
+
+    // Dark Mode toggle
+    const toggleBtn = document.getElementById('toggle-mode');
+    toggleBtn.addEventListener('click', () => {
+      document.body.classList.toggle('dark');
+      toggleBtn.textContent = document.body.classList.contains('dark') ? "☀️ Light Mode" : "🌙 Dark Mode";
     });
   </script>
 </body>
