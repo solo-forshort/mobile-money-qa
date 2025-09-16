@@ -1,393 +1,223 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta charset="UTF-8">
   <title>Cybersecurity Awareness Questions</title>
   <style>
-    :root{
-      --bg-light:#f4f4f9;
-      --text-light:#222;
-      --card:#ffffff;
-      --muted:#666;
-      --accent:#3498db;
-      --gold:#ffcc00;
-      --dark-bg:#000000;
-      --dark-text:#ffcc00;
-      --card-dark:#111111;
+    body {
+      font-family: Arial, sans-serif;
+      background: #000000; /* default dark */
+      color: #ffcc00;
+      padding: 20px;
+      transition: background 0.3s, color 0.3s;
     }
 
-    /* Base */
-    html,body{height:100%}
-    body{
-      margin:0;
-      font-family:Inter,system-ui,Arial,sans-serif;
-      background:var(--bg-light);
-      color:var(--text-light);
-      padding:18px;
-      transition:background .25s ease,color .25s ease;
-    }
-    h1{margin:0 0 12px;text-align:center;font-size:22px}
-
-    /* Top controls */
-    .top-controls{
-      display:flex;
-      gap:10px;
-      flex-wrap:wrap;
-      justify-content:center;
-      align-items:center;
-      margin-bottom:14px;
-    }
-    .btn {
-      display:inline-flex;
-      gap:8px;
-      align-items:center;
-      padding:8px 12px;
-      border-radius:8px;
-      text-decoration:none;
-      cursor:pointer;
-      border:0;
-      font-weight:600;
-    }
-    .ask-btn { background:var(--accent); color:#fff; }
-    .ask-btn:hover { background:#2b82c7 }
-    .toggle-btn { background:#222; color:#fff; border-radius:8px; padding:8px 10px; }
-    .toggle-btn:hover { filter:brightness(.95) }
-
-    /* Search and filters */
-    #page-search, #priority-filter {
-      padding:8px 10px;
-      border-radius:8px;
-      border:1px solid #d0d5db;
-      font-size:14px;
-      min-width:180px;
-    }
-    #page-search { width:260px; max-width:40vw; }
-
-    /* filter info */
-    #filter-info { text-align:center; color:var(--muted); margin:8px 0 12px; font-size:13px }
-
-    /* Cards grid */
-    #cards {
-      display:grid;
-      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-      gap:12px;
-      align-items:start;
+    body.light-mode {
+      background: #f4f4f9;
+      color: #333;
     }
 
-    /* Card */
-    .card{
-      background:var(--card);
-      border-radius:10px;
-      padding:12px;
-      box-shadow:0 2px 8px rgba(0,0,0,0.06);
-      display:flex;
-      flex-direction:column;
-      gap:8px;
-      height:200px;              /* fixed uniform height */
-      overflow:hidden;
-      transition:transform .18s,box-shadow .18s,background .2s;
+    h2 {
+      text-align: center;
+      margin-bottom: 20px;
     }
-    .card:hover{ transform:translateY(-6px); box-shadow:0 10px 20px rgba(0,0,0,0.12); }
 
-    .card .top {
-      display:block;
+    .controls {
+      text-align: center;
+      margin-bottom: 20px;
     }
+
+    /* Shared styles for buttons, inputs, dropdown */
+    .controls button,
+    .controls select,
+    .controls input {
+      margin: 5px;
+      padding: 10px 18px;
+      border: 2px solid #ffcc00;
+      border-radius: 30px; /* pill shape */
+      cursor: pointer;
+      transition: background 0.3s, color 0.3s, border 0.3s, box-shadow 0.3s;
+      font-size: 14px;
+    }
+
+    /* Buttons */
+    .controls button {
+      background: #ffcc00;
+      color: #000;
+      font-weight: bold;
+    }
+
+    body.light-mode .controls button {
+      background: #ffcc00;
+      color: #000;
+    }
+
+    /* Inputs and dropdowns */
+    .controls input,
+    .controls select {
+      background: transparent;
+      color: inherit;
+    }
+
+    body.light-mode .controls input,
+    body.light-mode .controls select {
+      background: #fff;
+      color: #333;
+    }
+
+    .controls input:focus,
+    .controls select:focus {
+      outline: none;
+      border-color: #ffcc00;
+      box-shadow: 0 0 6px #ffcc00;
+    }
+
+    .grid {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 15px;
+    }
+
+    .card {
+      background: #111;
+      color: #ffcc00;
+      border-radius: 15px;
+      padding: 15px;
+      box-shadow: 0 2px 6px rgba(255,204,0,0.3);
+      width: 280px;
+      min-height: 200px;
+      max-height: 220px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      overflow: hidden;
+      transition: background 0.3s, color 0.3s;
+    }
+
+    body.light-mode .card {
+      background: white;
+      color: #333;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+      border: 1px solid #ffcc00; /* gold accent */
+    }
+
     .question {
-      font-weight:700;
-      font-size:15px;
-      line-height:1.25;
-      color:inherit;
-      margin:0 0 6px 0;
-      overflow:hidden;
-      text-overflow:ellipsis;
-      display:-webkit-box;
-      -webkit-line-clamp:3;
-      -webkit-box-orient:vertical;
+      font-size: 16px;
+      font-weight: bold;
+      margin-bottom: 8px;
     }
 
-    .content {
-      flex:1 1 auto;
-      overflow:auto;            /* scroll inside if content too long */
-      padding-right:6px;
-    }
     .solution {
-      font-size:13px;
-      color:var(--muted);
-      margin:0 0 8px 0;
-      line-height:1.3;
-      overflow:hidden;
-      text-overflow:ellipsis;
-      display:-webkit-box;
-      -webkit-line-clamp:4;
-      -webkit-box-orient:vertical;
+      font-size: 14px;
+      flex-grow: 1;
     }
 
     .badges {
-      display:flex;
-      gap:8px;
-      align-items:center;
-      flex-wrap:wrap;
-      margin-top:6px;
+      margin-top: 8px;
     }
-    .badge{
-      padding:6px 8px;
-      border-radius:999px;
-      font-size:12px;
-      color:#fff;
-      cursor:pointer;
-      user-select:none;
-    }
-    .badge.priority-high{ background:#e74c3c }
-    .badge.priority-medium{ background:#f39c12 }
-    .badge.priority-low{ background:#27ae60 }
-    .badge.tag{ background:var(--accent) }
 
-    /* empty state */
-    #empty { text-align:center; color:var(--muted); padding:22px 0 }
-
-    /* Dark mode */
-    body.dark {
-      background:var(--dark-bg);
-      color:var(--dark-text);
+    .badge {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 12px;
+      margin-right: 5px;
+      color: white;
     }
-    body.dark .card { background:var(--card-dark); color:var(--dark-text); box-shadow:0 2px 8px rgba(0,0,0,0.6); }
-    body.dark .ask-btn { background:var(--gold); color:#000; }
-    body.dark .toggle-btn { background:#333; color:var(--gold) }
-    body.dark #page-search, body.dark #priority-filter { background:#111; color:var(--gold); border:1px solid #333 }
-    body.dark .badge.tag { background:#444; color:var(--gold) }
 
-    /* small screens */
-    @media (max-width:520px){
-      #page-search{ width:60% }
-      .top-controls{ gap:8px }
-    }
+    .high { background: #e74c3c; }
+    .medium { background: #f39c12; }
+    .low { background: #27ae60; }
+    .tag { background: #3498db; }
+
+    body.dark-mode .badge.tag { background: #ffcc00; color: #000; }
+    body.light-mode .badge.tag { background: #ffcc00; color: #000; }
   </style>
 </head>
-<body>
-  <h1>Cybersecurity Awareness Questions</h1>
+<body class="dark-mode">
+  <h2>Cybersecurity Awareness Questions</h2>
 
-  <div class="top-controls">
-    <a class="btn ask-btn" id="askBtn" target="_blank" rel="noopener noreferrer">📝 Ask A Question</a>
-
-    <input id="page-search" placeholder="Search questions, tags, solutions..." aria-label="Search questions">
-
-    <select id="priority-filter" aria-label="Filter by priority">
-      <option value="all">All priorities</option>
+  <div class="controls">
+    <button onclick="window.open('https://docs.google.com/forms/d/e/1FAIpQLScTZWQleOrA9JvGm6GZ_8CzrfzHQzgb7zwjnXejKTAtn5qnhw/viewform?usp=sharing','_blank')">
+      Ask A Question
+    </button>
+    <input type="text" id="search" placeholder="Search questions...">
+    <select id="filter">
+      <option value="all">All Priorities</option>
       <option value="high">High</option>
       <option value="medium">Medium</option>
       <option value="low">Low</option>
     </select>
-
-    <button id="toggle-mode" class="toggle-btn">🌙 Dark Mode</button>
+    <button onclick="toggleMode()">Toggle Light/Dark Mode</button>
   </div>
 
-  <div id="filter-info"></div>
-
-  <div id="cards" aria-live="polite"></div>
-  <div id="empty" style="display:none">No responses found</div>
+  <div id="cards" class="grid"></div>
 
   <script>
-    (function(){
-      // ---------- CONFIG ----------
-      const FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLScTZWQleOrA9JvGm6GZ_8CzrfzHQzgb7zwjnXejKTAtn5qnhw/viewform?usp=sharing&ouid=117936331264839609159";
-      const apiKey = "AIzaSyDQPmzCD5z68jpaBprX9D_LWjKEFzAIwjc"; // keep restricted to your domain
-      const sheetId = "1Qdoq2PNheBxEpjotm5YDWEm-kcjR_hskFyg5UZPpqxw";
-      const sheetName = "response";
-      const SHEETS_URL = `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${encodeURIComponent(sheetName)}?key=${apiKey}`;
+    const apiKey = "AIzaSyDQPmzCD5z68jpaBprX9D_LWjKEFzAIwjc";
+    const sheetId = "1Qdoq2PNheBxEpjotm5YDWEm-kcjR_hskFyg5UZPpqxw";
+    const sheetName = "response";
+    const url = `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${sheetName}?key=${apiKey}`;
 
-      // Plug form link into button
-      document.getElementById('askBtn').href = FORM_URL;
+    const container = document.getElementById("cards");
+    const searchInput = document.getElementById("search");
+    const filterSelect = document.getElementById("filter");
 
-      // Elements
-      const cardsEl = document.getElementById('cards');
-      const emptyEl = document.getElementById('empty');
-      const searchEl = document.getElementById('page-search');
-      const priorityFilterEl = document.getElementById('priority-filter');
-      const filterInfoEl = document.getElementById('filter-info');
-      const toggleBtn = document.getElementById('toggle-mode');
+    let allData = [];
 
-      // State
-      let rows = [];         // raw rows from sheet (including header)
-      let cards = [];        // created card elements
-      let activePriority = 'all';
+    function toggleMode() {
+      document.body.classList.toggle("light-mode");
+      document.body.classList.toggle("dark-mode");
+    }
 
-      // Dark mode persistence
-      const darkPref = localStorage.getItem('qa_dark_mode');
-      if (darkPref === '1') {
-        document.body.classList.add('dark');
-        toggleBtn.textContent = "☀️ Light Mode";
-      }
-
-      toggleBtn.addEventListener('click', () => {
-        const isDark = document.body.classList.toggle('dark');
-        toggleBtn.textContent = isDark ? "☀️ Light Mode" : "🌙 Dark Mode";
-        localStorage.setItem('qa_dark_mode', isDark ? '1':'0');
+    function renderCards(data) {
+      container.innerHTML = "";
+      data.forEach(row => {
+        const [timestamp, question, solution, priority, tag] = row;
+        const card = document.createElement("div");
+        card.className = "card";
+        card.innerHTML = `
+          <div class="question">${question || ""}</div>
+          ${solution ? `<div class="solution"><strong>Solution:</strong> ${solution}</div>` : ""}
+          <div class="badges">
+            ${priority ? `<span class="badge ${priority.toLowerCase()}">${priority}</span>` : ""}
+            ${tag ? `<span class="badge tag">${tag}</span>` : ""}
+          </div>
+        `;
+        container.appendChild(card);
       });
+    }
 
-      // Fetch sheet data
-      async function loadData(){
-        try {
-          const res = await fetch(SHEETS_URL);
-          if (!res.ok) throw new Error(`Fetch failed: ${res.status}`);
-          const json = await res.json();
-          rows = json.values || [];
-          renderRows();
-        } catch (err) {
-          console.error(err);
-          cardsEl.textContent = "Could not load data. Check sheet permissions and API key.";
-        }
-      }
-
-      // Create cards from rows
-      function renderRows(){
-        cardsEl.innerHTML = '';
-        cards = [];
-        if (!rows || rows.length <= 1) {
-          emptyEl.style.display = 'block';
-          return;
-        }
-        emptyEl.style.display = 'none';
-
-        // header mapping (in case order differs)
-        const headers = rows[0].map(h => String(h).trim());
-        const idx = name => headers.indexOf(name);
-
-        const iTimestamp = idx('Timestamp');
-        const iQuestion = idx('Question');
-        const iSolution = idx('Possible Solution');
-        const iPriority = idx('Priority(H/M/L)');
-        const iTag = idx('Tag(e.g., SIM swap, phishing, PIN safety)');
-
-        rows.slice(1).forEach((r, rIdx) => {
-          const question = (r[iQuestion]||'').trim();
-          const solution = (r[iSolution]||'').trim();
-          const priorityRaw = (r[iPriority]||'').trim();
-          const priority = priorityRaw ? priorityRaw.toLowerCase() : '';
-          const tag = (r[iTag]||'').trim();
-
-          // build card element
-          const card = document.createElement('article');
-          card.className = 'card';
-          if (priority) card.setAttribute('data-priority', priority);
-
-          // inner structure:
-          // top: question
-          // content: scrollable area with solution + maybe other info
-          // bottom badges area
-          const topDiv = document.createElement('div');
-          topDiv.className = 'top';
-          const qEl = document.createElement('div');
-          qEl.className = 'question';
-          qEl.textContent = question || 'No question';
-          topDiv.appendChild(qEl);
-
-          const contentDiv = document.createElement('div');
-          contentDiv.className = 'content';
-          if (solution) {
-            const sol = document.createElement('div');
-            sol.className = 'solution';
-            sol.innerHTML = `<strong>Solution:</strong> ${escapeHtml(solution)}`;
-            contentDiv.appendChild(sol);
-          }
-          // optionally add timestamp or other internal notes if desired in future
-          // keep contentDiv empty if no solution — that's fine
-
-          const badgesDiv = document.createElement('div');
-          badgesDiv.className = 'badges';
-          if (priority) {
-            const pBadge = document.createElement('span');
-            pBadge.className = 'badge priority-' + (priority==='h'|| priority==='high' ? 'high' : (priority==='m'||priority==='medium' ? 'medium':'low'));
-            // show canonical label
-            const label = (priorityRaw || '').replace(/^\s*$/,'').trim();
-            pBadge.textContent = label || priority;
-            badgesDiv.appendChild(pBadge);
-
-            // clickable: filter by clicking badge
-            pBadge.addEventListener('click', () => {
-              const val = priority;
-              priorityFilterEl.value = val;
-              activePriority = val;
-              updateFilterInfo();
-              filterCards();
-            });
-          }
-          if (tag) {
-            const tBadge = document.createElement('span');
-            tBadge.className = 'badge tag';
-            tBadge.textContent = tag;
-            badgesDiv.appendChild(tBadge);
-            // tag click filters by tag text
-            tBadge.addEventListener('click', () => {
-              searchEl.value = tag;
-              filterCards();
-            });
-          }
-
-          card.appendChild(topDiv);
-          card.appendChild(contentDiv);
-          card.appendChild(badgesDiv);
-
-          cardsEl.appendChild(card);
-          cards.push(card);
-        });
-
-        // initial filter render
-        filterCards();
-      }
-
-      // Helpers
-      function escapeHtml(str){
-        return String(str || '')
-          .replace(/&/g,'&amp;')
-          .replace(/</g,'&lt;')
-          .replace(/>/g,'&gt;');
-      }
-
-      // Filters
-      searchEl.addEventListener('input', filterCards);
-      priorityFilterEl.addEventListener('change', (e) => {
-        activePriority = e.target.value;
-        updateFilterInfo();
-        filterCards();
-      });
-
-      function updateFilterInfo(){
-        if (activePriority && activePriority !== 'all') {
-          filterInfoEl.textContent = `Filtering priority: ${activePriority}`;
+    fetch(url)
+      .then(response => response.json())
+      .then(data => {
+        if (data.values && data.values.length > 1) {
+          allData = data.values.slice(1);
+          renderCards(allData);
         } else {
-          filterInfoEl.textContent = '';
+          container.innerHTML = "<p>No responses yet.</p>";
         }
+      })
+      .catch(error => {
+        container.textContent = "Error: " + error;
+      });
+
+    searchInput.addEventListener("input", () => {
+      const searchTerm = searchInput.value.toLowerCase();
+      const filtered = allData.filter(row => row[1] && row[1].toLowerCase().includes(searchTerm));
+      renderCards(filtered);
+    });
+
+    filterSelect.addEventListener("change", () => {
+      const value = filterSelect.value;
+      if (value === "all") {
+        renderCards(allData);
+      } else {
+        const filtered = allData.filter(row => row[3] && row[3].toLowerCase() === value);
+        renderCards(filtered);
       }
-
-      function filterCards(){
-        const q = (searchEl.value || '').toLowerCase().trim();
-        const pf = (priorityFilterEl.value || 'all').toLowerCase();
-
-        let visibleCount = 0;
-        cards.forEach(card => {
-          const text = card.innerText.toLowerCase();
-          const cardPriority = (card.getAttribute('data-priority')||'').toLowerCase();
-          const matchesQuery = !q || text.includes(q);
-          const matchesPriority = (pf === 'all' || (cardPriority && cardPriority.includes(pf)));
-          if (matchesQuery && matchesPriority) {
-            card.style.display = '';
-            visibleCount++;
-          } else {
-            card.style.display = 'none';
-          }
-        });
-
-        emptyEl.style.display = visibleCount === 0 ? 'block' : 'none';
-      }
-
-      // initial load
-      loadData();
-
-      // Reload data periodically (optional) — set to 60s so site updates automatically
-      // If you don't want auto-refresh, remove or comment the following line
-      setInterval(loadData, 60000);
-    })();
+    });
   </script>
 </body>
 </html>
