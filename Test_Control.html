@@ -1,0 +1,393 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Cybersecurity Awareness Questions</title>
+  <style>
+    :root{
+      --bg-light:#f4f4f9;
+      --text-light:#222;
+      --card:#ffffff;
+      --muted:#666;
+      --accent:#3498db;
+      --gold:#ffcc00;
+      --dark-bg:#000000;
+      --dark-text:#ffcc00;
+      --card-dark:#111111;
+    }
+
+    /* Base */
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family:Inter,system-ui,Arial,sans-serif;
+      background:var(--bg-light);
+      color:var(--text-light);
+      padding:18px;
+      transition:background .25s ease,color .25s ease;
+    }
+    h1{margin:0 0 12px;text-align:center;font-size:22px}
+
+    /* Top controls */
+    .top-controls{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      justify-content:center;
+      align-items:center;
+      margin-bottom:14px;
+    }
+    .btn {
+      display:inline-flex;
+      gap:8px;
+      align-items:center;
+      padding:8px 12px;
+      border-radius:8px;
+      text-decoration:none;
+      cursor:pointer;
+      border:0;
+      font-weight:600;
+    }
+    .ask-btn { background:var(--accent); color:#fff; }
+    .ask-btn:hover { background:#2b82c7 }
+    .toggle-btn { background:#222; color:#fff; border-radius:8px; padding:8px 10px; }
+    .toggle-btn:hover { filter:brightness(.95) }
+
+    /* Search and filters */
+    #page-search, #priority-filter {
+      padding:8px 10px;
+      border-radius:8px;
+      border:1px solid #d0d5db;
+      font-size:14px;
+      min-width:180px;
+    }
+    #page-search { width:260px; max-width:40vw; }
+
+    /* filter info */
+    #filter-info { text-align:center; color:var(--muted); margin:8px 0 12px; font-size:13px }
+
+    /* Cards grid */
+    #cards {
+      display:grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap:12px;
+      align-items:start;
+    }
+
+    /* Card */
+    .card{
+      background:var(--card);
+      border-radius:10px;
+      padding:12px;
+      box-shadow:0 2px 8px rgba(0,0,0,0.06);
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+      height:200px;              /* fixed uniform height */
+      overflow:hidden;
+      transition:transform .18s,box-shadow .18s,background .2s;
+    }
+    .card:hover{ transform:translateY(-6px); box-shadow:0 10px 20px rgba(0,0,0,0.12); }
+
+    .card .top {
+      display:block;
+    }
+    .question {
+      font-weight:700;
+      font-size:15px;
+      line-height:1.25;
+      color:inherit;
+      margin:0 0 6px 0;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      display:-webkit-box;
+      -webkit-line-clamp:3;
+      -webkit-box-orient:vertical;
+    }
+
+    .content {
+      flex:1 1 auto;
+      overflow:auto;            /* scroll inside if content too long */
+      padding-right:6px;
+    }
+    .solution {
+      font-size:13px;
+      color:var(--muted);
+      margin:0 0 8px 0;
+      line-height:1.3;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      display:-webkit-box;
+      -webkit-line-clamp:4;
+      -webkit-box-orient:vertical;
+    }
+
+    .badges {
+      display:flex;
+      gap:8px;
+      align-items:center;
+      flex-wrap:wrap;
+      margin-top:6px;
+    }
+    .badge{
+      padding:6px 8px;
+      border-radius:999px;
+      font-size:12px;
+      color:#fff;
+      cursor:pointer;
+      user-select:none;
+    }
+    .badge.priority-high{ background:#e74c3c }
+    .badge.priority-medium{ background:#f39c12 }
+    .badge.priority-low{ background:#27ae60 }
+    .badge.tag{ background:var(--accent) }
+
+    /* empty state */
+    #empty { text-align:center; color:var(--muted); padding:22px 0 }
+
+    /* Dark mode */
+    body.dark {
+      background:var(--dark-bg);
+      color:var(--dark-text);
+    }
+    body.dark .card { background:var(--card-dark); color:var(--dark-text); box-shadow:0 2px 8px rgba(0,0,0,0.6); }
+    body.dark .ask-btn { background:var(--gold); color:#000; }
+    body.dark .toggle-btn { background:#333; color:var(--gold) }
+    body.dark #page-search, body.dark #priority-filter { background:#111; color:var(--gold); border:1px solid #333 }
+    body.dark .badge.tag { background:#444; color:var(--gold) }
+
+    /* small screens */
+    @media (max-width:520px){
+      #page-search{ width:60% }
+      .top-controls{ gap:8px }
+    }
+  </style>
+</head>
+<body>
+  <h1>Cybersecurity Awareness Questions</h1>
+
+  <div class="top-controls">
+    <a class="btn ask-btn" id="askBtn" target="_blank" rel="noopener noreferrer">📝 Ask A Question</a>
+
+    <input id="page-search" placeholder="Search questions, tags, solutions..." aria-label="Search questions">
+
+    <select id="priority-filter" aria-label="Filter by priority">
+      <option value="all">All priorities</option>
+      <option value="high">High</option>
+      <option value="medium">Medium</option>
+      <option value="low">Low</option>
+    </select>
+
+    <button id="toggle-mode" class="toggle-btn">🌙 Dark Mode</button>
+  </div>
+
+  <div id="filter-info"></div>
+
+  <div id="cards" aria-live="polite"></div>
+  <div id="empty" style="display:none">No responses found</div>
+
+  <script>
+    (function(){
+      // ---------- CONFIG ----------
+      const FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLScTZWQleOrA9JvGm6GZ_8CzrfzHQzgb7zwjnXejKTAtn5qnhw/viewform?usp=sharing&ouid=117936331264839609159";
+      const apiKey = "AIzaSyDQPmzCD5z68jpaBprX9D_LWjKEFzAIwjc"; // keep restricted to your domain
+      const sheetId = "1Qdoq2PNheBxEpjotm5YDWEm-kcjR_hskFyg5UZPpqxw";
+      const sheetName = "response";
+      const SHEETS_URL = `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${encodeURIComponent(sheetName)}?key=${apiKey}`;
+
+      // Plug form link into button
+      document.getElementById('askBtn').href = FORM_URL;
+
+      // Elements
+      const cardsEl = document.getElementById('cards');
+      const emptyEl = document.getElementById('empty');
+      const searchEl = document.getElementById('page-search');
+      const priorityFilterEl = document.getElementById('priority-filter');
+      const filterInfoEl = document.getElementById('filter-info');
+      const toggleBtn = document.getElementById('toggle-mode');
+
+      // State
+      let rows = [];         // raw rows from sheet (including header)
+      let cards = [];        // created card elements
+      let activePriority = 'all';
+
+      // Dark mode persistence
+      const darkPref = localStorage.getItem('qa_dark_mode');
+      if (darkPref === '1') {
+        document.body.classList.add('dark');
+        toggleBtn.textContent = "☀️ Light Mode";
+      }
+
+      toggleBtn.addEventListener('click', () => {
+        const isDark = document.body.classList.toggle('dark');
+        toggleBtn.textContent = isDark ? "☀️ Light Mode" : "🌙 Dark Mode";
+        localStorage.setItem('qa_dark_mode', isDark ? '1':'0');
+      });
+
+      // Fetch sheet data
+      async function loadData(){
+        try {
+          const res = await fetch(SHEETS_URL);
+          if (!res.ok) throw new Error(`Fetch failed: ${res.status}`);
+          const json = await res.json();
+          rows = json.values || [];
+          renderRows();
+        } catch (err) {
+          console.error(err);
+          cardsEl.textContent = "Could not load data. Check sheet permissions and API key.";
+        }
+      }
+
+      // Create cards from rows
+      function renderRows(){
+        cardsEl.innerHTML = '';
+        cards = [];
+        if (!rows || rows.length <= 1) {
+          emptyEl.style.display = 'block';
+          return;
+        }
+        emptyEl.style.display = 'none';
+
+        // header mapping (in case order differs)
+        const headers = rows[0].map(h => String(h).trim());
+        const idx = name => headers.indexOf(name);
+
+        const iTimestamp = idx('Timestamp');
+        const iQuestion = idx('Question');
+        const iSolution = idx('Possible Solution');
+        const iPriority = idx('Priority(H/M/L)');
+        const iTag = idx('Tag(e.g., SIM swap, phishing, PIN safety)');
+
+        rows.slice(1).forEach((r, rIdx) => {
+          const question = (r[iQuestion]||'').trim();
+          const solution = (r[iSolution]||'').trim();
+          const priorityRaw = (r[iPriority]||'').trim();
+          const priority = priorityRaw ? priorityRaw.toLowerCase() : '';
+          const tag = (r[iTag]||'').trim();
+
+          // build card element
+          const card = document.createElement('article');
+          card.className = 'card';
+          if (priority) card.setAttribute('data-priority', priority);
+
+          // inner structure:
+          // top: question
+          // content: scrollable area with solution + maybe other info
+          // bottom badges area
+          const topDiv = document.createElement('div');
+          topDiv.className = 'top';
+          const qEl = document.createElement('div');
+          qEl.className = 'question';
+          qEl.textContent = question || 'No question';
+          topDiv.appendChild(qEl);
+
+          const contentDiv = document.createElement('div');
+          contentDiv.className = 'content';
+          if (solution) {
+            const sol = document.createElement('div');
+            sol.className = 'solution';
+            sol.innerHTML = `<strong>Solution:</strong> ${escapeHtml(solution)}`;
+            contentDiv.appendChild(sol);
+          }
+          // optionally add timestamp or other internal notes if desired in future
+          // keep contentDiv empty if no solution — that's fine
+
+          const badgesDiv = document.createElement('div');
+          badgesDiv.className = 'badges';
+          if (priority) {
+            const pBadge = document.createElement('span');
+            pBadge.className = 'badge priority-' + (priority==='h'|| priority==='high' ? 'high' : (priority==='m'||priority==='medium' ? 'medium':'low'));
+            // show canonical label
+            const label = (priorityRaw || '').replace(/^\s*$/,'').trim();
+            pBadge.textContent = label || priority;
+            badgesDiv.appendChild(pBadge);
+
+            // clickable: filter by clicking badge
+            pBadge.addEventListener('click', () => {
+              const val = priority;
+              priorityFilterEl.value = val;
+              activePriority = val;
+              updateFilterInfo();
+              filterCards();
+            });
+          }
+          if (tag) {
+            const tBadge = document.createElement('span');
+            tBadge.className = 'badge tag';
+            tBadge.textContent = tag;
+            badgesDiv.appendChild(tBadge);
+            // tag click filters by tag text
+            tBadge.addEventListener('click', () => {
+              searchEl.value = tag;
+              filterCards();
+            });
+          }
+
+          card.appendChild(topDiv);
+          card.appendChild(contentDiv);
+          card.appendChild(badgesDiv);
+
+          cardsEl.appendChild(card);
+          cards.push(card);
+        });
+
+        // initial filter render
+        filterCards();
+      }
+
+      // Helpers
+      function escapeHtml(str){
+        return String(str || '')
+          .replace(/&/g,'&amp;')
+          .replace(/</g,'&lt;')
+          .replace(/>/g,'&gt;');
+      }
+
+      // Filters
+      searchEl.addEventListener('input', filterCards);
+      priorityFilterEl.addEventListener('change', (e) => {
+        activePriority = e.target.value;
+        updateFilterInfo();
+        filterCards();
+      });
+
+      function updateFilterInfo(){
+        if (activePriority && activePriority !== 'all') {
+          filterInfoEl.textContent = `Filtering priority: ${activePriority}`;
+        } else {
+          filterInfoEl.textContent = '';
+        }
+      }
+
+      function filterCards(){
+        const q = (searchEl.value || '').toLowerCase().trim();
+        const pf = (priorityFilterEl.value || 'all').toLowerCase();
+
+        let visibleCount = 0;
+        cards.forEach(card => {
+          const text = card.innerText.toLowerCase();
+          const cardPriority = (card.getAttribute('data-priority')||'').toLowerCase();
+          const matchesQuery = !q || text.includes(q);
+          const matchesPriority = (pf === 'all' || (cardPriority && cardPriority.includes(pf)));
+          if (matchesQuery && matchesPriority) {
+            card.style.display = '';
+            visibleCount++;
+          } else {
+            card.style.display = 'none';
+          }
+        });
+
+        emptyEl.style.display = visibleCount === 0 ? 'block' : 'none';
+      }
+
+      // initial load
+      loadData();
+
+      // Reload data periodically (optional) — set to 60s so site updates automatically
+      // If you don't want auto-refresh, remove or comment the following line
+      setInterval(loadData, 60000);
+    })();
+  </script>
+</body>
+</html>
