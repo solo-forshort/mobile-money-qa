@@ -1,218 +1,239 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Cybersecurity Awareness Questions</title>
   <style>
+    * { box-sizing: border-box; }
+
+    :root {
+      --gold: #ffcc00;
+      --dark-bg: #000;
+      --dark-card: #111;
+      --light-bg: #fff;
+      --text-dark: #000;
+      --text-light: #ffcc00;
+    }
+
     body {
       font-family: Arial, sans-serif;
-      background: #f4f4f9;
-      padding: 20px;
-      color: #333;
-      transition: background 0.3s ease, color 0.3s ease;
+      padding: 18px;
+      margin: 0;
+      transition: background 0.25s ease, color 0.25s ease;
     }
-    h2 {
-      text-align: center;
+
+    /* Default = dark mode */
+    body.dark {
+      background: var(--dark-bg);
+      color: var(--text-light);
+    }
+
+    /* Light mode */
+    body.light {
+      background: var(--light-bg);
+      color: var(--text-dark);
+    }
+
+    h2 { text-align:center; margin: 6px 0 18px; }
+
+    .top-controls {
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      align-items:center;
+      justify-content:center;
+      margin-bottom:18px;
+    }
+
+    .pill {
+      padding:10px 16px;
+      border-radius:999px;
+      border:2px solid var(--gold);
+      background: var(--gold);
+      color:#000;
+      font-weight:600;
+      cursor:pointer;
+      text-decoration:none;
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+    }
+    .pill.secondary {
+      background: transparent;
       color: inherit;
     }
-    /* Top Controls */
-    .top-controls {
-      text-align: center;
-      margin-bottom: 20px;
+
+    #page-search, #priority-filter {
+      padding:10px 14px;
+      border-radius:999px;
+      border:2px solid var(--gold);
+      background: transparent;
+      color: inherit;
+      font-size:14px;
     }
-    .suggest-btn {
-      background: #3498db;
-      color: white;
-      padding: 10px 18px;
-      border-radius: 8px;
-      text-decoration: none;
-      font-size: 14px;
-      margin-right: 10px;
-      transition: background 0.3s ease;
-    }
-    .suggest-btn:hover {
-      background: #2980b9;
-    }
-    #page-search {
-      padding: 8px 12px;
-      width: 50%;
-      max-width: 300px;
-      border-radius: 6px;
-      border: 1px solid #ccc;
-      font-size: 14px;
-    }
-    #priority-filter {
-      padding: 8px 12px;
-      border-radius: 6px;
-      border: 1px solid #ccc;
-      font-size: 14px;
-      margin-left: 10px;
-    }
-    .toggle-btn {
-      margin-left: 10px;
-      padding: 8px 14px;
-      border-radius: 6px;
-      border: none;
-      cursor: pointer;
-      background: #2c3e50;
-      color: white;
-      font-size: 13px;
-      transition: background 0.3s ease;
-    }
-    .toggle-btn:hover {
-      background: #1a242f;
-    }
-    /* Cards Grid */
+
     #cards {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-      gap: 15px;
+      gap: 16px;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      align-items: start;
     }
-    .card {
-      background: white;
-      border-radius: 10px;
-      padding: 12px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.15);
-      display: flex;
-      flex-direction: column;
-      justify-content: flex-start;
-      transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.3s ease, color 0.3s ease;
-    }
-    .card:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-    }
-    .question {
-      font-size: 15px;
-      font-weight: bold;
-      margin-bottom: 6px;
-    }
-    .solution {
-      font-size: 13px;
-      margin-bottom: 6px;
-    }
-    .badge {
-      display: inline-block;
-      padding: 4px 8px;
-      border-radius: 20px;
-      font-size: 11px;
-      margin-right: 4px;
-      color: white;
-    }
-    .high { background: #e74c3c; }
-    .medium { background: #f39c12; }
-    .low { background: #27ae60; }
-    .tag { background: #3498db; }
 
-    /* Dark Mode */
-    body.dark {
-      background: #1e1e1e;
-      color: #f4f4f9;
+    .card {
+      border-radius: 12px;
+      padding: 14px;
+      border: 1px solid var(--gold);
+      background: var(--dark-card);
+      color: var(--text-light);
+      transition: transform .18s, box-shadow .18s, background .18s, color .18s;
+      display:flex;
+      flex-direction:column;
+      gap:8px;
     }
-    body.dark .card {
-      background: #2c2c2c;
-      color: #f4f4f9;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.6);
+    .card:hover { transform: translateY(-6px); box-shadow: 0 10px 18px rgba(0,0,0,0.5); }
+
+    .question { font-weight:700; font-size:15px; }
+    .solution { font-size:14px; color:rgba(255,204,0,0.95); }
+    .badges { margin-top:6px; display:flex; gap:8px; flex-wrap:wrap; }
+    .badge { padding:6px 10px; border-radius:999px; color:#fff; font-size:12px; }
+
+    .high { background:#e74c3c; }
+    .medium { background:#f39c12; }
+    .low { background:#27ae60; }
+    .tag { background:#3498db; }
+
+    /* Light-mode overrides */
+    body.light .card {
+      background: var(--light-bg);
+      color: var(--text-dark);
+      box-shadow: 0 2px 6px rgba(0,0,0,0.08);
     }
-    body.dark #page-search,
-    body.dark #priority-filter {
-      background: #333;
-      color: #f4f4f9;
-      border: 1px solid #555;
-    }
-    body.dark .suggest-btn {
-      background: #2980b9;
-    }
-    body.dark .toggle-btn {
-      background: #444;
+    body.light #page-search, 
+    body.light #priority-filter { background: #fff; color: var(--text-dark); }
+    body.light .pill { background: var(--gold); color: #000; border-color: var(--gold); }
+    body.light .solution { color: #000; } /* ✅ FIX applied */
+
+    @media (max-width: 1024px) {
+      #cards { grid-template-columns: 1fr !important; }
+      .card { width: 100%; max-width: 100%; }
+      .top-controls { padding: 0 12px; }
+      #page-search { flex: 1 1 100%; max-width: 100%; }
+      #priority-filter { flex: 0 0 auto; margin-left: 8px; }
     }
   </style>
 </head>
-<body>
+<body class="dark">
   <h2>Cybersecurity Awareness Questions</h2>
 
-  <!-- Top controls -->
   <div class="top-controls">
-    <a href="https://docs.google.com/forms/d/e/1FAIpQLScTZWQleOrA9JvGm6GZ_8CzrfzHQzgb7zwjnXejKTAtn5qnhw/viewform?usp=sharing&ouid=117936331264839609159" 
-       target="_blank" 
-       class="suggest-btn"> Ask A Question</a>
-    <input type="text" id="page-search" placeholder="Search questions...">
-    <select id="priority-filter">
+    <a class="pill" id="ask-btn" target="_blank" rel="noopener"> Ask A Question</a>
+
+    <input id="page-search" placeholder="Search questions..." aria-label="Search">
+
+    <select id="priority-filter" aria-label="Filter priority">
       <option value="all">All</option>
       <option value="high">High</option>
       <option value="medium">Medium</option>
       <option value="low">Low</option>
     </select>
-    <button id="toggle-mode" class="toggle-btn">🌙 Dark Mode</button>
+
+    <button class="pill secondary" id="toggle-mode">☀ Light Mode</button>
   </div>
 
-  <!-- Cards container -->
-  <div id="cards"></div>
+  <div id="cards" aria-live="polite"></div>
 
   <script>
+    const FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLScTZWQleOrA9JvGm6GZ_8CzrfzHQzgb7zwjnXejKTAtn5qnhw/viewform?usp=sharing";
     const apiKey = "AIzaSyDQPmzCD5z68jpaBprX9D_LWjKEFzAIwjc";
     const sheetId = "1Qdoq2PNheBxEpjotm5YDWEm-kcjR_hskFyg5UZPpqxw";
     const sheetName = "response";
-    const url = `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${sheetName}?key=${apiKey}`;
+    const SHEETS_URL = `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${encodeURIComponent(sheetName)}?key=${apiKey}`;
 
-    fetch(url)
-      .then(response => response.json())
-      .then(data => {
-        const rows = data.values;
-        const container = document.getElementById("cards");
+    document.getElementById('ask-btn').href = FORM_URL;
 
-        if (rows && rows.length > 1) {
-          rows.slice(1).forEach(row => {
-            const [timestamp, question, solution, priority, tag] = row;
+    const toggleBtn = document.getElementById('toggle-mode');
+    function updateToggleLabel() {
+      toggleBtn.textContent = document.body.classList.contains('light') ? " Dark Mode" : "☀ Light Mode";
+    }
+    toggleBtn.addEventListener('click', () => {
+      document.body.classList.toggle('light');
+      document.body.classList.toggle('dark');
+      updateToggleLabel();
+    });
+    updateToggleLabel();
 
-            const card = document.createElement("div");
-            card.className = "card";
-            card.setAttribute("data-priority", (priority || "").toLowerCase());
+    async function loadData(){
+      try {
+        const res = await fetch(SHEETS_URL);
+        if(!res.ok) throw new Error('Fetch failed: '+res.status);
+        const json = await res.json();
+        const rows = json.values || [];
+        renderRows(rows);
+      } catch(err) {
+        document.getElementById('cards').textContent = 'Could not load sheet data: ' + err.message;
+        console.error(err);
+      }
+    }
 
-            card.innerHTML = `
-              <div class="question">${question || "No Question"}</div>
-              <div class="solution"><strong>Solution:</strong> ${solution || "No solution yet"}</div>
-              <div>
-                ${priority ? `<span class="badge ${priority.toLowerCase()}">${priority}</span>` : ""}
-                ${tag ? `<span class="badge tag">${tag}</span>` : ""}
-              </div>
-            `;
+    function renderRows(rows){
+      const container = document.getElementById('cards');
+      container.innerHTML = '';
+      if(!rows || rows.length <= 1){
+        container.innerHTML = '<p>No responses yet.</p>';
+        return;
+      }
 
-            container.appendChild(card);
-          });
-        } else {
-          container.innerHTML = "<p>No responses yet.</p>";
-        }
-      })
-      .catch(error => {
-        document.getElementById("cards").textContent = "Error: " + error;
-      });
+      const headers = rows[0].map(h => String(h||'').trim());
+      const idx = name => headers.indexOf(name);
 
-    // Search filter
-    document.getElementById('page-search').addEventListener('input', filterCards);
-    document.getElementById('priority-filter').addEventListener('change', filterCards);
+      const iQuestion = idx('Question');
+      const iSolution = idx('Possible Solution');
+      const iPriority = idx('Priority(H/M/L)');
+      const iTag = idx('Tag(e.g., SIM swap, phishing, PIN safety)');
 
-    function filterCards() {
-      const query = document.getElementById('page-search').value.toLowerCase();
-      const priorityFilter = document.getElementById('priority-filter').value;
-      const cards = document.querySelectorAll('.card');
+      rows.slice(1).forEach(r => {
+        const question = (iQuestion>=0 ? r[iQuestion] : r[1]) || '';
+        const solution = (iSolution>=0 ? r[iSolution] : r[2]) || '';
+        const priority = (iPriority>=0 ? r[iPriority] : r[3]) || '';
+        const tag = (iTag>=0 ? r[iTag] : r[4]) || '';
 
-      cards.forEach(card => {
-        const text = card.innerText.toLowerCase();
-        const cardPriority = card.getAttribute('data-priority');
-        const matchesText = text.includes(query);
-        const matchesPriority = (priorityFilter === "all" || cardPriority === priorityFilter);
+        const card = document.createElement('div');
+        card.className = 'card';
+        card.setAttribute('data-priority', (String(priority).toLowerCase()||''));
 
-        card.style.display = (matchesText && matchesPriority) ? '' : 'none';
+        let inner = `<div class="question">${escapeHtml(question)}</div>`;
+        if(solution && String(solution).trim()) inner += `<div class="solution"><strong>Solution:</strong> ${escapeHtml(solution)}</div>`;
+        inner += `<div class="badges">`;
+        if(priority) inner += `<span class="badge ${priority.toLowerCase()}">${escapeHtml(priority)}</span>`;
+        if(tag) inner += `<span class="badge tag">${escapeHtml(tag)}</span>`;
+        inner += `</div>`;
+
+        card.innerHTML = inner;
+        container.appendChild(card);
       });
     }
 
-    // Dark Mode toggle
-    const toggleBtn = document.getElementById('toggle-mode');
-    toggleBtn.addEventListener('click', () => {
-      document.body.classList.toggle('dark');
-      toggleBtn.textContent = document.body.classList.contains('dark') ? "☀️ Light Mode" : "🌙 Dark Mode";
-    });
+    function escapeHtml(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+    const searchEl = document.getElementById('page-search');
+    const priorityEl = document.getElementById('priority-filter');
+
+    function applyFilters(){
+      const q = (searchEl.value||'').toLowerCase().trim();
+      const p = (priorityEl.value||'all').toLowerCase();
+      document.querySelectorAll('.card').forEach(card => {
+        const text = card.innerText.toLowerCase();
+        const pr = (card.getAttribute('data-priority')||'').toLowerCase();
+        const matchesText = !q || text.includes(q);
+        const matchesPriority = (p === 'all') || (pr === p);
+        card.style.display = (matchesText && matchesPriority) ? '' : 'none';
+      });
+    }
+    searchEl.addEventListener('input', applyFilters);
+    priorityEl.addEventListener('change', applyFilters);
+
+    loadData();
   </script>
 </body>
 </html>
